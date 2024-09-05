@@ -18,7 +18,7 @@ jobs:
       - name: Add Submodule
         run: git submodule add https://${{ secrets.REPO_PAT }}@github.com/gocanvas/android_sdk.git android_sdk
 
-      - name: Navigate to Submodule and Checkout Branch
+      - name: Fetch latest release
         working-directory: android_sdk
         run: |
           LATEST_TAG=$(git tag -l 'release/*' | sort -Vr | head -n 1)

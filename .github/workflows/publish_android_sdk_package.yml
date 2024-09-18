@@ -71,7 +71,7 @@ jobs:
           echo "PACKAGES_USERNAME ---> ${{env.PACKAGES_USERNAME}}"
           echo "PACKAGES_TOKEN ---> ${{env.PACKAGES_TOKEN}}"
           echo "VERSION ---> ${{env.PACKAGES_VERSION}}"
-          ./gradlew :canvasSdk:publishSdkReleasePublicationToMavenLocal -DPACKAGES_URL=${{env.PACKAGES_URL}} -DPACKAGES_USERNAME=${{env.PACKAGES_USERNAME}} -DPACKAGES_TOKEN=${{env.PACKAGES_TOKEN}} -DPACKAGES_VERSION=${{env.PACKAGES_VERSION}}
+          ./gradlew :canvasSdk:publishSdkReleasePublicationToGitHubPackagesRepository -DPACKAGES_URL=${{env.PACKAGES_URL}} -DPACKAGES_USERNAME=${{env.PACKAGES_USERNAME}} -DPACKAGES_TOKEN=${{env.PACKAGES_TOKEN}} -DPACKAGES_VERSION=${{env.PACKAGES_VERSION}}
 
       - name: Cleanup
         run: |

@@ -153,7 +153,7 @@ In order to do that, you just have to call the `CanvasSdk.showForm` method again
 ### Errors
 
 The SDK supports the following error types:
-- `INVALID_JSON` - when the `formJson` cannot pe parsed to `Form`
+- `INVALID_JSON` - when the `formJson` cannot be parsed to `Form`
 - `INVALID_FORM_DEFINITION` - when the `Form` has no sections, sheets or entries
 - `INVALID_SAVED_RESPONSE` - when the `Response` cannot be restored after partially form saving
 

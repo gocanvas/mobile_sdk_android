@@ -59,22 +59,34 @@ The Sdk provides the following api interface:
 ```kotlin
 interface CanvasSdkApi {
 
-  /**
-   * Displays the form into another activity.
-   *
-   * @param formJson the form in JSON string format
-   * @param activity the parent activity
-   * @param formLauncher the result launcher that receives the response
-   */
-  fun showForm(formJson: String, activity: Activity, formLauncher: ActivityResultLauncher<Intent>)
+    /**
+     * Initiates the SDK with the given [config]
+     */
+    fun init(config: CanvasSdkConfig)
 
-  /**
-   * Returns the submission response in JSON string format.
-   */
-  fun getResponse(): String
+    /**
+     * Displays the form into another activity.
+     * @param formJson the form in JSON string format
+     * @param activity the parent activity
+     * @param formLauncher the result launcher that receives the response
+     */
+    fun showForm(formJson: String, activity: Activity, formLauncher: ActivityResultLauncher<Intent>)
+
+    /**
+     * Returns the submission response in JSON string format.
+     * */
+    fun getResponse(): String
 }
 ```
 It can be accessed using the `CanvasSdk` instance.
+
+### Initiate the SDK
+
+Use the `CanvasSdk.init` method that takes a `CanvasSdkConfig` object for passing application specific data. Create the `CanvasSdkConfig` instance and pass your company guid to it.
+
+```kotlin
+CanvasSdk.init(CanvasSdkConfig(companyGuid = <your_company_guid>))
+```
 
 ### Display Form
 
@@ -108,7 +120,7 @@ Intent extras key access:
 - `CanvasSdkKey.ERROR_NUMBER_KEY` - contains the error code in `String` format
 - `CanvasSdkKey.ERROR_MESSAGE_KEY` - contains the error message in `String` format
 
-Reading the response:
+#### Reading the response:
 
 You can access the form response by calling the `CanvasSdk.getResponse()` method after the result is received from the `formLauncher`.
 
@@ -144,6 +156,34 @@ ActivityResultLauncher<Intent> formLauncher = registerForActivityResult(new Acti
         });
 ```
 
+#### Reading Media files
+
+Images, Drawings, Signatures
+
+1. Entry response with single media file
+
+- the library is returning the local path to file as `String` on the JSON `value` field.
+
+```
+{
+  ..
+  "value": "path_to_image_1",
+  "label": "Camera Photo"
+} 
+```
+
+2. Entry response with multiple media files
+
+- the library is returning a single `String` that concatenates all the paths to file. The paths are delimitated by the “\r\n” separator. It can be accessed on the JSON `value` field
+
+```
+{
+   ..
+   "value": "path_to_image_1\r\n\path_to_image_2\r\n\path_to_image_3"
+   "label": "Multi Photo"
+}
+```
+
 ### Resume Form Response
 
 The SDK provides the ability to resume the form response in case of an app crash or of a partially form completion.
@@ -161,9 +201,9 @@ Each error has associated an error code and a message as follows:
 
 ```kotlin
 enum class CanvasSdkErrorType(val statusCode: Int, val errorDescription: String) {
-  INVALID_JSON(90000, "Unable to parse form definition."),
-  INVALID_FORM_DEFINITION(90001, "Form definition is invalid."),
-  INVALID_SAVED_RESPONSE(90002, "Unable to resume response.")
+    INVALID_JSON(90000, "Unable to parse form definition."),
+    INVALID_FORM_DEFINITION(90001, "Form definition is invalid."),
+    INVALID_SAVED_RESPONSE(90002, "Unable to resume response.")
 }
 ```
 
@@ -190,10 +230,10 @@ Override the color attributes in your `colors.xml` file
 
 ```xml
 <resources>
-  <color name="gc_sdk_color_primary">...</color>
-  <color name="gc_sdk_color_accent">...</color>
-  <color name="gc_sdk_color_primary_dark">...</color>
-  <color name="gc_sdk_color_secondary">...</color>
+    <color name="gc_sdk_color_primary">...</color>
+    <color name="gc_sdk_color_accent">...</color>
+    <color name="gc_sdk_color_primary_dark">...</color>
+    <color name="gc_sdk_color_secondary">...</color>
 </resources>
 ```
 

@@ -72,6 +72,14 @@ interface CanvasSdkApi {
     fun showForm(formJson: String, activity: Activity, formLauncher: ActivityResultLauncher<Intent>)
 
     /**
+     * Displays the form into another activity.
+     * @param formConfig the form configuration to set complex form info
+     * @param activity the parent activity
+     * @param formLauncher the result launcher that receives the response
+     */
+    fun showForm(formConfig: CanvasSdkFormConfig, activity: Activity, formLauncher: ActivityResultLauncher<Intent>)
+    
+    /**
      * Returns the submission response in JSON string format.
      * */
     fun getResponse(): String
@@ -105,6 +113,53 @@ ActivityResultLauncher<Intent> formLauncher = registerForActivityResult(new Acti
 ```java
 CanvasSdk.INSTANCE.showForm(formJson, activity, formLauncher);
 ```
+#### Configure Form
+
+You can set additional form configuration by passing to the `showForm` method an instance of `CanvasSdkFormConfig`.
+
+```kotlin
+/**
+ * Canvas SDK Form config
+ * @param formJson the form in JSON string format
+ * @param referenceDataJson the reference data in JSON string format.
+ * Supports both [JSONObject] & [JSONArray] types in case of a single or multiple reference data
+ * associated with the given [formJson].
+ * @param prefilledEntries the prefilled entries in JSON string format.
+ */
+data class CanvasSdkFormConfig(
+    val formJson: String,
+    val referenceDataJson: String? = null,
+    val prefilledEntries: String? = null
+)
+```
+##### Prefilled Entries scope
+Acts as support for prefilling the form's entries by passing a list of responses.
+
+1. Prefill all entries based on labels:
+```json
+{
+  "responses": [
+    {
+      "value": "Example Value",
+      "label": "Example Label"
+    }
+  ]
+}
+```
+
+2. Prefill only specific entries based on form's entry id:
+```json
+{
+  "responses": [
+    {
+      "entry_id": 123456,
+      "value": "Example Value",
+      "label": "Example Label"
+    }
+  ]
+}
+```
+
 
 ### Receive Form Response
 
@@ -195,6 +250,7 @@ The SDK supports the following error types:
 - `INVALID_JSON` - when the `formJson` cannot be parsed to `Form`
 - `INVALID_FORM_DEFINITION` - when the `Form` has no sections, sheets or entries
 - `INVALID_SAVED_RESPONSE` - when the `Response` cannot be restored after partially form saving
+- `REFERENCE_DATA_NOT_SET` - when the `Form` definition contains reference data but was not passed 
 
 Each error has associated an error code and a message as follows:
 
@@ -202,7 +258,8 @@ Each error has associated an error code and a message as follows:
 enum class CanvasSdkErrorType(val statusCode: Int, val errorDescription: String) {
     INVALID_JSON(90000, "Unable to parse form definition."),
     INVALID_FORM_DEFINITION(90001, "Form definition is invalid."),
-    INVALID_SAVED_RESPONSE(90002, "Unable to resume response.")
+    INVALID_SAVED_RESPONSE(90002, "Unable to resume response."),
+    REFERENCE_DATA_NOT_SET(90003, "Unable to show form. Reference data was not set."),
 }
 ```
 

@@ -11,7 +11,7 @@ GoCanvas SDK requires at minimum Android API 26+.
 
 1. Install via GitHub Packages. Add the following source to your `repositories` section 
 
-**Optional**: Create a GitHub access token with `read:packages` scope then replace <github_username> and <github_access_token> with your credentials.
+Create a GitHub access token with `read:packages` scope then replace <github_username> and <github_access_token> with your credentials.
 
 ```gradle
 repositories {

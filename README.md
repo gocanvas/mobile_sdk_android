@@ -407,3 +407,11 @@ CanvasSdk.addConfigValue("MOBILE_INTERFACE_THEME", CanvasSdkInterfaceTheme.SYSTE
     <color name="gc_sdk_color_dark">...</color>
 </resources>
 ```
+
+### Strings 
+
+You can update the `Submit` button text by overriding the resource into your `strings.xml` file
+
+```xml
+    <string name="submit_button_title">...</string>
+```

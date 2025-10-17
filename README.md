@@ -175,7 +175,10 @@ Acts as support for prefilling the form's entries by passing a list of responses
     {
       "entry_id": 123456,
       "value": "Example Value",
-      "label": "Example Label"
+      "label": "Example Label", // Label is Optional
+      // Required for List loop
+      "id": 391647,
+      "multi_key": "Example Multi Key"
     }
   ]
 }
@@ -358,13 +361,13 @@ By overriding these color attributes, you can easily change the styles of all th
 
 **Applying your own colors:**
 
-1. Enable the theme mode with the SDK API (default is set to `LIGHT`)
+1. Enable the theme mode with the SDK API (default is set to `SYSTEM`)
 
 Call the following method after `CanvasSdk.init()`
 
 ```kotlin
 // You can also set CanvasSdkInterfaceTheme to LIGHT or DARK 
-CanvasSdk.addConfigValue("MOBILE_INTERFACE_THEME", CanvasSdkInterfaceTheme.SYSTEM)
+CanvasSdk.addConfigValue("MOBILE_INTERFACE_THEME", CanvasSdkInterfaceTheme.LIGHT)
 ```
 
 2. Add the following colors defined in your `default colors.xml` file:

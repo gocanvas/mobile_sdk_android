@@ -5,6 +5,7 @@
 - [Installation](#Installation)
 - [Usage](#Usage)
 - [Branding](#Branding)
+- [Multi-Language](#Multi-Language)
 
 ## Installation
 
@@ -409,6 +410,35 @@ CanvasSdk.addConfigValue("MOBILE_INTERFACE_THEME", CanvasSdkInterfaceTheme.LIGHT
     <color name="gc_sdk_color_light">...</color>
     <color name="gc_sdk_color_dark">...</color>
 </resources>
+```
+
+### Multi-Language
+
+Supported languages:
+
+| Language     | Resources     |
+|--------------|---------------|
+| English (US) | values        |
+| English (UK) | values-en-rGB |
+| Czech        | values-cs     |
+| Dutch        | values-nl     |
+| French       | values-fr     |
+| German       | values-de     |
+| Hungarian    | values-hu     |
+| Lithuanian   | values-lt     |
+| Polish       | values-pl     |
+| Portuguese   | values-pt     |
+| Slovak       | values-sk     |
+| Spanish      | values-es     |
+| Turkish      | values-tr     |
+| Finnis       | values-fi     |
+
+Default behavior: `System` with `English (US)` fallback
+
+Configuration usage:
+```kotlin
+val locale: Locale = provideLocale() // provide your own desired locale 
+CanvasSdk.addConfigValue("MOBILE_LANGUAGE", locale)
 ```
 
 ### Strings 

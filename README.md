@@ -9,7 +9,7 @@
 
 ## Installation
 
-GoCanvas SDK requires at minimum Android API 26+.
+GoCanvas SDK requires at minimum Android API 26+. Compile SDK API 36.
 
 1. Install via GitHub Packages. Add the following source to your `repositories` section
 
@@ -337,24 +337,18 @@ enum class CanvasSdkErrorType(val statusCode: Int, val errorDescription: String)
 
 The color system that can be used to create a color scheme that reflects your brand or style.
 
-| Color Attribute                       | Theme Color Role                      | Default                                                                  | Affected Ui Components                                                                       | 
----------------------------------------|---------------------------------------|--------------------------------------------------------------------------|----------------------------------------------------------------------------------------------| 
-| gc_sdk_color_primary                  | colorPrimary                          | ![#039de7](https://placehold.co/15x15/039de7/039de7.png) #039de7         | toolbar, dialog buttons, primary button, tint input fields                                   | 
-| gc_sdk_color_primary_dark             | colorPrimaryDark                      | ![#0077b3](https://placehold.co/15x15/0077b3/0077b3.png) #0077b3         | status bar                                                                                   | 
-| gc_sdk_color_accent                   | colorAccent                           | ![#5fa3d0](https://placehold.co/15x15/5fa3d0/5fa3d0.png) #5fa3d0         | date & time pickers top area background, input fields selected text                          | 
-| gc_sdk_color_secondary                | colorControlActivated, colorSecondary | ![#00BFA5](https://placehold.co/15x15/00BFA5/00BFA5.png) #00BFA5         | progress bar, date & time pickers selected value, checkbox, input fields with captured values | 
-| gc_sdk_color_icon                     | :colorPrimary                         | ![#039de7](https://placehold.co/15x15/039de7/039de7.png) #039de7         | increment & decrement icons                                                                  | 
-| gc_sdk_color_rating_selected          | :colorPrimary                         | ![#039de7](https://placehold.co/15x15/039de7/039de7.png) #039de7         | rating selected icons                                                                        | 
-| gc_sdk_color_control_normal           | :colorControlNormal                   | ![#88999999](https://placehold.co/15x15/88999999/88999999.png) #88999999 | checkbox & radio buttons unselected, field border & icon tint color                          | 
-| gc_sdk_color_secondary_container_low  |                                       | ![#F1F1F5](https://placehold.co/15x15/F1F1F5/F1F1F5.png) #F1F1F5         | multi photo cards background, list item selected & divider                                   | 
-| gc_sdk_color_secondary_container      | :colorSecondaryContainer              | ![#fbfcfd](https://placehold.co/15x15/fbfcfd/fbfcfd.png) #fbfcfd         | input, list & grid field background                                                          | 
-| gc_sdk_color_secondary_container_high |                                       | ![#BDBDBD](https://placehold.co/15x15/BDBDBD/BDBDBD.png) #BDBDBD         | list & grid header background                                                                | 
-| gc_sdk_color_background_progress      |                                       | ![#DDDDDD](https://placehold.co/15x15/DDDDDD/DDDDDD.png) #DDDDDD         | progress bar background                                                                      | 
-| gc_sdk_color_error                    | :colorError                           | ![#D73A31](https://placehold.co/15x15/D73A31/D73A31.png) #D73A31         | errors                                                                                       | 
-| gc_sdk_color_background_light         | :colorBackground                      | ![#E9E9E9](https://placehold.co/15x15/E9E9E9/E9E9E9.png) #E9E9E9         | sheet background                                                                             | 
-| gc_sdk_color_background_dark          | :colorBackground                      | ![#12171C](https://placehold.co/15x15/12171C/12171C.png) #12171C         | sheet background                                                                             | 
-| gc_sdk_color_light                    | :colorOnPrimary                       | ![#FFFFFF](https://placehold.co/15x15/FFFFFF/FFFFFF.png) #FFFFFF         | bottom bar, chips, review & checkbox background, button & segmented selected text color      | 
-| gc_sdk_color_dark                     | :colorOnPrimary                       | ![#000000](https://placehold.co/15x15/000000/000000.png) #000000         | bottom bar, chips, review & checkbox background, button & segmented selected text color      | 
+| Color Attribute                       | Default (Light)                                                  | Default (Dark)                                                   | Affected Ui Components                                                                                                                                     |
+|---------------------------------------|------------------------------------------------------------------|------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| gc_sdk_color_primary                  | ![#0e51c4](https://placehold.co/15x15/0e51c4/0e51c4.png) #0e51c4 | ![#039de7](https://placehold.co/15x15/039de7/039de7.png) #039de7 | brand color: buttons, links, icons, selected controls (checkbox, radio button, chip, segmented, rating), input fields with captured values                 |
+| gc_sdk_color_secondary                | ![#ecf1fa](https://placehold.co/15x15/ecf1fa/ecf1fa.png) #ecf1fa | ![#000d12](https://placehold.co/15x15/000d12/000d12.png) #000d12 | secondary buttons background                                                                                                                                |
+| gc_sdk_color_background_light         | ![#f5f6f6](https://placehold.co/15x15/f5f6f6/f5f6f6.png) #f5f6f6 | ![#151b1e](https://placehold.co/15x15/151b1e/151b1e.png) #151b1e | screen background, action-icon background on top bar                                                                                                       |
+| gc_sdk_color_background_dark          | ![#0b1215](https://placehold.co/15x15/0b1215/0b1215.png) #0b1215 | ![#ffffff](https://placehold.co/15x15/ffffff/ffffff.png) #ffffff | inverse (dark) background surface                                                                                                                          |
+| gc_sdk_color_secondary_container      | ![#ffffff](https://placehold.co/15x15/ffffff/ffffff.png) #ffffff | ![#0b1215](https://placehold.co/15x15/0b1215/0b1215.png) #0b1215 | background for: input fields, top bar, checkbox, radio button, chip, segmented, rating, table/list header & list item                                     |
+| gc_sdk_color_secondary_container_low  | ![#ecf1fa](https://placehold.co/15x15/ecf1fa/ecf1fa.png) #ecf1fa | ![#000d12](https://placehold.co/15x15/000d12/000d12.png) #000d12 | drawer actions, selected item                                                                                                                              |
+| gc_sdk_color_secondary_container_high | ![#fafafa](https://placehold.co/15x15/fafafa/fafafa.png) #fafafa | ![#10171a](https://placehold.co/15x15/10171a/10171a.png) #10171a | inversed color on grid/list                                                                                                                                |
+| gc_sdk_color_background_progress      | ![#d8d9da](https://placehold.co/15x15/d8d9da/d8d9da.png) #d8d9da | ![#32383a](https://placehold.co/15x15/32383a/32383a.png) #32383a | progress bar inactive color                                                                                                                                |
+| gc_sdk_color_progress                 | ![#0e51c4](https://placehold.co/15x15/0e51c4/0e51c4.png) #0e51c4 | ![#039de7](https://placehold.co/15x15/039de7/039de7.png) #039de7 | progress bar active color                                                                                                                                  |
+| gc_sdk_color_error                    | ![#c40e51](https://placehold.co/15x15/c40e51/c40e51.png) #c40e51 | ![#e63a79](https://placehold.co/15x15/e63a79/e63a79.png) #e63a79 | error icon, text & border                                                                                                                                  |
 
 By overriding these color attributes, you can easily change the styles of all the mentioned components used by the sdk.
 
@@ -377,18 +371,15 @@ CanvasSdk.addConfigValue("MOBILE_INTERFACE_THEME", CanvasSdkInterfaceTheme.LIGHT
 
 <resources>
     <color name="gc_sdk_color_primary">...</color>
-    <color name="gc_sdk_color_primary_dark">...</color>
-    <color name="gc_sdk_color_accent">...</color>
     <color name="gc_sdk_color_secondary">...</color>
-    <color name="gc_sdk_color_secondary_container_low">...</color>
-    <color name="gc_sdk_color_secondary_container">...</color>
-    <color name="gc_sdk_color_secondary_container_high">...</color>
-    <color name="gc_sdk_color_background_progress">...</color>
-    <color name="gc_sdk_color_error">...</color>
     <color name="gc_sdk_color_background_light">...</color>
     <color name="gc_sdk_color_background_dark">...</color>
-    <color name="gc_sdk_color_light">...</color>
-    <color name="gc_sdk_color_dark">...</color>
+    <color name="gc_sdk_color_secondary_container">...</color>
+    <color name="gc_sdk_color_secondary_container_low">...</color>
+    <color name="gc_sdk_color_secondary_container_high">...</color>
+    <color name="gc_sdk_color_background_progress">...</color>
+    <color name="gc_sdk_color_progress">...</color>
+    <color name="gc_sdk_color_error">...</color>
 </resources>
 ```
 
@@ -398,17 +389,15 @@ CanvasSdk.addConfigValue("MOBILE_INTERFACE_THEME", CanvasSdkInterfaceTheme.LIGHT
 
 <resources>
     <color name="gc_sdk_color_primary">...</color>
-    <color name="gc_sdk_color_primary_dark">...</color>
-    <color name="gc_sdk_color_accent">...</color>
     <color name="gc_sdk_color_secondary">...</color>
-    <color name="gc_sdk_color_secondary_container_low">...</color>
+    <color name="gc_sdk_color_background_light">...</color>
+    <color name="gc_sdk_color_background_dark">...</color>
     <color name="gc_sdk_color_secondary_container">...</color>
+    <color name="gc_sdk_color_secondary_container_low">...</color>
     <color name="gc_sdk_color_secondary_container_high">...</color>
     <color name="gc_sdk_color_background_progress">...</color>
+    <color name="gc_sdk_color_progress">...</color>
     <color name="gc_sdk_color_error">...</color>
-    <color name="gc_sdk_color_background_dark">...</color>
-    <color name="gc_sdk_color_light">...</color>
-    <color name="gc_sdk_color_dark">...</color>
 </resources>
 ```
 
@@ -416,22 +405,31 @@ CanvasSdk.addConfigValue("MOBILE_INTERFACE_THEME", CanvasSdkInterfaceTheme.LIGHT
 
 Supported languages:
 
-| Language     | Resources     |
-|--------------|---------------|
-| English (US) | values        |
-| English (UK) | values-en-rGB |
-| Czech        | values-cs     |
-| Dutch        | values-nl     |
-| French       | values-fr     |
-| German       | values-de     |
-| Hungarian    | values-hu     |
-| Lithuanian   | values-lt     |
-| Polish       | values-pl     |
-| Portuguese   | values-pt     |
-| Slovak       | values-sk     |
-| Spanish      | values-es     |
-| Turkish      | values-tr     |
-| Finnis       | values-fi     |
+| Language                | Resources       |
+|-------------------------|-----------------|
+| English (US)            | values          |
+| English (UK)            | values-en-rGB   |
+| Chinese (Simplified)    | values-zh-rCN   |
+| Chinese (Traditional)   | values-zh-rTW   |
+| Czech                   | values-cs       |
+| Danish                  | values-da       |
+| Dutch                   | values-nl       |
+| Finnish                 | values-fi       |
+| French                  | values-fr       |
+| French (Canada)         | values-fr-rCA   |
+| German                  | values-de       |
+| Hindi                   | values-hi       |
+| Hungarian               | values-hu       |
+| Lithuanian              | values-lt       |
+| Malay                   | values-ms       |
+| Norwegian (Bokmål)      | values-nb       |
+| Polish                  | values-pl       |
+| Portuguese              | values-pt       |
+| Slovak                  | values-sk       |
+| Spanish                 | values-es       |
+| Spanish (Latin America) | values-b+es+419 |
+| Swedish                 | values-sv       |
+| Turkish                 | values-tr       |
 
 Default behavior: `System` with `English (US)` fallback
 

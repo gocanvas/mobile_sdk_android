@@ -69,7 +69,7 @@ repositories {
 ```gradle
 dependencies {
   //...
-  implementation("com.gocanvas.sdk:android:6.3.0")
+  implementation("com.gocanvas.sdk:android:6.3.1")
   //...
 }
 ```
@@ -357,10 +357,12 @@ The User-based mode adds its own errors, see [User-based error codes](#user-base
 ### Clear data
 
 ```kotlin
-fun clearData()
+fun clearData(): String
 ```
 
-Takes no parameters and returns nothing. Deletes all the data the SDK has stored on the device. It can be used in both modes and must not be called on the main thread.
+Takes no parameters. Deletes all the data the SDK has stored on the device. It can be used in both modes and must not be called on the main thread.
+
+Returns a JSON (see [Result format](#result-format)) where, on success, `data` is empty.
 
 ### Branding
 
@@ -372,9 +374,9 @@ The color system that can be used to create a color scheme that reflects your br
 |---------------------------------------|------------------------------------------------------------------|------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | gc_sdk_color_primary                  | ![#0e51c4](https://placehold.co/15x15/0e51c4/0e51c4.png) #0e51c4 | ![#039de7](https://placehold.co/15x15/039de7/039de7.png) #039de7 | brand color: buttons, links, icons, selected controls (checkbox, radio button, chip, segmented, rating), input fields with captured values                 |
 | gc_sdk_color_secondary                | ![#ecf1fa](https://placehold.co/15x15/ecf1fa/ecf1fa.png) #ecf1fa | ![#000d12](https://placehold.co/15x15/000d12/000d12.png) #000d12 | table of contents button background                                                                                                                        |
-| gc_sdk_color_background_light         | ![#f5f6f6](https://placehold.co/15x15/f5f6f6/f5f6f6.png) #f5f6f6 | ![#151b1e](https://placehold.co/15x15/151b1e/151b1e.png) #151b1e | screen background, action-icon background on top bar                                                                                                       |
+| gc_sdk_color_background_light         | ![#f5f6f6](https://placehold.co/15x15/f5f6f6/f5f6f6.png) #f5f6f6 | ![#151b1e](https://placehold.co/15x15/151b1e/151b1e.png) #151b1e | screen background, action-icon background on top bar & bottom sheets                                                                                      |
 | gc_sdk_color_background_dark          | ![#0b1215](https://placehold.co/15x15/0b1215/0b1215.png) #0b1215 | ![#ffffff](https://placehold.co/15x15/ffffff/ffffff.png) #ffffff | inverse (dark) background surface                                                                                                                          |
-| gc_sdk_color_secondary_container      | ![#ffffff](https://placehold.co/15x15/ffffff/ffffff.png) #ffffff | ![#0b1215](https://placehold.co/15x15/0b1215/0b1215.png) #0b1215 | background for: input fields, top bar, checkbox, radio button, chip, segmented, rating, table/list header & list item, grid rows (1st, 3rd, …)             |
+| gc_sdk_color_secondary_container      | ![#ffffff](https://placehold.co/15x15/ffffff/ffffff.png) #ffffff | ![#0b1215](https://placehold.co/15x15/0b1215/0b1215.png) #0b1215 | background for: bottom sheets, input fields, top bar, checkbox, radio button, chip, segmented, rating, table/list header & list item, grid rows (1st, 3rd, …) |
 | gc_sdk_color_secondary_container_low  | ![#f5f8fd](https://placehold.co/15x15/f5f8fd/f5f8fd.png) #f5f8fd | ![#000609](https://placehold.co/15x15/000609/000609.png) #000609 | section background in bottom sheets (sheet menu, photo source, review items), pressed/selected list item                                                   |
 | gc_sdk_color_secondary_container_high | ![#fafafa](https://placehold.co/15x15/fafafa/fafafa.png) #fafafa | ![#10171a](https://placehold.co/15x15/10171a/10171a.png) #10171a | grid rows (2nd, 4th, …)                                                                                                                                    |
 | gc_sdk_color_background_progress      | ![#d8d9da](https://placehold.co/15x15/d8d9da/d8d9da.png) #d8d9da | ![#32383a](https://placehold.co/15x15/32383a/32383a.png) #32383a | progress bar inactive color                                                                                                                                |
@@ -679,19 +681,21 @@ interface CanvasSdkApi {
      * @param username the user's GoCanvas username (email)
      * @param token the user's OAuth token JSON, see [Obtain the user's token](#step-3-obtain-the-users-token)
      * @param uploadOnly when `true`, only uploads the completed submissions
+     * @param uploadSavedSubmissions when `true`, also uploads saved (in-progress) submissions. Off by
+     * default.
      * @return a JSON with an `error` and a `data` property. On success `data` contains the counts of
      * `forms_added`, `forms_removed`, `forms_retired`, `dispatches_added` and `dispatches_removed`
      * (empty when `uploadOnly` is `true`). See [Sync](#step-5-sync).
      *
      * NOTE: this must not be run on the main thread
      */
-    fun sync(username: String, token: String, uploadOnly: Boolean = false): String
+    fun sync(username: String, token: String, uploadOnly: Boolean = false, uploadSavedSubmissions: Boolean = false): String
 
     /**
      * Returns the forms stored on the device, each with its submissions.
      * @param username the synced user's username
      * @return a JSON with an `error` and a `data` property. On success `data` contains the `forms`
-     * array, and each form contains its `submissions` array.
+     * array, and each form contains its `folders` array and its `submissions` array.
      * See [Get the forms and submissions](#step-6-get-the-forms-and-submissions).
      *
      * NOTE: this must not be run on the main thread
@@ -730,13 +734,18 @@ interface CanvasSdkApi {
      * Deletes a saved submission from the device.
      * @param username the synced user's username
      * @param guid the `guid` of the submission, as returned by `getFormsAndSubmissions`
+     * @param token optional token JSON to use for the server delete of a submission already uploaded to
+     * the server. When provided it must be a valid, unexpired token for the synced user, otherwise an
+     * `INVALID_TOKEN` error is returned. When omitted, the saved token is used (refreshed via the token
+     * provider if it has expired).
      * @return a JSON with an `error` and a `data` property. On success `data` contains the deleted
      * submission. Dispatches, handoffs and completed submissions cannot be deleted and return a
-     * `SUBMISSION_CANNOT_BE_DELETED` error.
+     * `SUBMISSION_CANNOT_BE_DELETED` error. A saved submission already uploaded to the server is also
+     * deleted on the server first, which requires a network connection.
      *
      * NOTE: this must not be run on the main thread
      */
-    fun deleteSubmission(username: String, guid: String): String
+    fun deleteSubmission(username: String, guid: String, token: String? = null): String
 
     /**
      * Returns `true` when any submission on the device has `pendingUpload: true`, i.e. it will be
@@ -850,11 +859,12 @@ The provider is called when the stored token has expired, and the returned token
 - the provider is called off the main thread and blocks the calling thread until it returns, so it must not wait on the main thread
 - it must not call the other SDK methods
 - the most recent registration wins
+- the refreshed token must be a valid token for the synced user; if it is not a valid GoCanvas SDK bearer token the call returns `INVALID_TOKEN`, and if it belongs to a different user it returns `TOKEN_USER_MISMATCH`
 
 #### Step 5: Sync
 
 ```kotlin
-fun sync(username: String, token: String, uploadOnly: Boolean = false): String
+fun sync(username: String, token: String, uploadOnly: Boolean = false, uploadSavedSubmissions: Boolean = false): String
 ```
 
 | Parameter | Description |
@@ -862,14 +872,17 @@ fun sync(username: String, token: String, uploadOnly: Boolean = false): String
 | `username` | the user's GoCanvas username (email) |
 | `token` | the user's token JSON from [Step 3](#step-3-obtain-the-users-token) |
 | `uploadOnly` | when `true`, only uploads the completed submissions, which makes the sync faster when you don't need to refresh the forms and submissions list |
+| `uploadSavedSubmissions` | when `true`, also uploads saved (in-progress) submissions. Off by default |
 
 `sync` uploads the completed submissions, then downloads the user's forms, reference data, dispatches and handoffs. It must not be called on the main thread.
+
+- When `uploadSavedSubmissions` is `true`, saved submissions the user created on this device are uploaded. While this is enabled, saved submissions awaiting upload are reflected in `hasPendingSubmissions` and in the `pendingUpload` flag of `getFormsAndSubmissions`.
 
 - The first successful `sync` stores the user on the device. All the other calls must use the same `username`.
 - When the first `sync` of a user fails, no user is stored: the SDK stays in Userless mode and the user-based calls return `NO_SYNCED_USER` until a `sync` succeeds.
 - Only one user can be synced at a time. To switch to a different user, [`clearData`](#clear-data) must be called first.
 - The first sync of a user downloads every assigned form, which can take a while for a large account. Later syncs only download what has changed and are much faster. The call returns only when the whole sync has finished, so we recommend showing a progress UI while it runs.
-- Only one sync can run at a time; calling `sync` while another sync is running returns a `SYNC_IN_PROGRESS` error.
+- Only one sync can run at a time; calling `sync` while another sync is running returns a `SYNC_IN_PROGRESS` error. While a sync is running, `showForm`, `showSubmission`, `deleteSubmission` and `clearData` also return `SYNC_IN_PROGRESS`.
 
 Returns a JSON (see [Result format](#result-format)) where, on success, `data` contains a summary of the changes:
 
@@ -927,6 +940,9 @@ It must not be called on the main thread. Returns a JSON (see [Result format](#r
         "email_options": 2,
         "workflow_enabled": true,
         "image_path": "/data/user/0/<app>/.../img_987_1.png",
+        "folders": [
+          { "id": 4567, "name": "Inspections" }
+        ],
         "submissions": [
           {
             "guid": "0d1b5c2e-...",
@@ -936,6 +952,7 @@ It must not be called on the main thread. Returns a JSON (see [Result format](#r
             "dispatch_id": null,
             "deletable": true,
             "pendingUpload": false,
+            "state": "synced",
             "rejected": false
           }
         ]
@@ -959,6 +976,7 @@ The form properties:
 | `email_options` | the form's email setting, as configured in GoCanvas |
 | `workflow_enabled` | `true` when the form is part of a workflow (its submissions can be handed off) |
 | `image_path` | the local path of the form's image |
+| `folders` | the folders the form belongs to, each `{ "id", "name" }`; an array, though the platform assigns one folder per form today (empty when the form is in no folder) |
 | `submissions` | the form's submissions stored on the device, see below |
 
 The form `status` can contain one of the following values:
@@ -971,6 +989,8 @@ The submission `status` can contain one of the following values:
 
 Once a submission and all its media files are uploaded, the submission is removed from the device and is no longer returned. If its media files do not finish uploading, it stays `closed` until a subsequent `sync` uploads them.
 
+A saved submission is locked while a `sync` uploads it. If that sync is interrupted (for example, the app is closed), the submission stays `open` with `state` set to `sync_in_progress`: it cannot be opened or deleted, and the next `sync` finishes uploading it.
+
 The submission properties:
 
 | Property | Description |
@@ -981,7 +1001,8 @@ The submission properties:
 | `last_saved_at` | when the submission was last saved, in epoch seconds, or `null` |
 | `dispatch_id` | the dispatch id when the submission is a dispatch, otherwise `null` |
 | `deletable` | whether `deleteSubmission` can delete it (dispatches, handoffs and completed submissions cannot be deleted) |
-| `pendingUpload` | `true` when the submission is `closed`, so it will be uploaded (or finish uploading) on the next `sync` |
+| `pendingUpload` | `true` when the submission will be uploaded (or finish uploading) on the next `sync`: a `closed` submission, or — when syncing with `uploadSavedSubmissions` — a saved submission created on this device |
+| `state` | `sync_pending` when the submission waits for the next `sync` to upload it, `sync_in_progress` when a `sync` started uploading it and did not finish, or `synced` when it has nothing to upload |
 | `rejected` | `true` when the submission is a handoff rejected back to the user; it then also contains the `rejector` and the `rejection_note` |
 
 Possible errors: `NO_SYNCED_USER`, `INVALID_USER`.
@@ -994,7 +1015,7 @@ fun showSubmission(username: String, guid: String, activity: Activity, formLaunc
 ```
 
 - `showForm` - starts a new submission for the form with the specified `formId`
-- `showSubmission` - opens the saved submission, dispatch or handoff with the specified `guid`. Only `open` submissions can be opened; a `closed` one returns a `SUBMISSION_NOT_EDITABLE` error
+- `showSubmission` - opens the saved submission, dispatch or handoff with the specified `guid`. Only `open` submissions can be opened; a `closed` one, or a saved one whose upload is in progress (`state: sync_in_progress`), returns a `SUBMISSION_NOT_EDITABLE` error
 
 | Parameter | Description |
 |---|---|
@@ -1019,6 +1040,7 @@ If the form or submission cannot be displayed, the result code is `Activity.RESU
 - `INVALID_FORM_DEFINITION` - when the form has no sections, sheets or entries
 - `REFERENCE_DATA_NOT_SET` - when the form's reference data is not stored on the device
 - `SUBMISSION_NOT_EDITABLE` - `showSubmission` only: when the submission is `closed` and can no longer be edited
+- `SYNC_IN_PROGRESS` - when a `sync` is running
 
 #### Step 9: Read the result
 
@@ -1035,6 +1057,7 @@ When the result is received by `formLauncher`, call `CanvasSdk.getResponse()`. I
     "dispatch_id": null,
     "deletable": false,
     "pendingUpload": true,
+    "state": "sync_pending",
     "rejected": false
   }
 }
@@ -1051,17 +1074,22 @@ Call [`sync`](#step-5-sync) again to upload the completed submissions (`pendingU
 #### deleteSubmission
 
 ```kotlin
-fun deleteSubmission(username: String, guid: String): String
+fun deleteSubmission(username: String, guid: String, token: String? = null): String
 ```
 
 | Parameter | Description |
 |---|---|
 | `username` | the synced user's username |
 | `guid` | the submission `guid`, as returned by `getFormsAndSubmissions` |
+| `token` | optional token JSON used for the server delete of a submission already uploaded to the server; when omitted, the saved token is used |
 
-Deletes a saved submission from the device. It must not be called on the main thread. Returns a JSON (see [Result format](#result-format)) where, on success, `data` contains the deleted submission, with the same properties as in `getFormsAndSubmissions` (an empty object when no submission has that `guid`). Dispatches, handoffs and completed submissions cannot be deleted and return a `SUBMISSION_CANNOT_BE_DELETED` error.
+Deletes a saved submission from the device. It must not be called on the main thread. Returns a JSON (see [Result format](#result-format)) where, on success, `data` contains the deleted submission, with the same properties as in `getFormsAndSubmissions` (an empty object when no submission has that `guid`). Dispatches, handoffs, completed submissions and saved submissions whose upload is in progress (`state: sync_in_progress`) cannot be deleted and return a `SUBMISSION_CANNOT_BE_DELETED` error.
 
-Possible errors: `NO_SYNCED_USER`, `INVALID_USER`, `SUBMISSION_CANNOT_BE_DELETED`, `INVALID_SAVED_RESPONSE` (when the submission could not be deleted from the device).
+If the submission has already been uploaded to the server (a saved submission previously synced with `uploadSavedSubmissions`), it is deleted on the server first and removed locally only if that succeeds, so a network connection is required in that case. A saved submission that exists only on the device is deleted locally and works offline.
+
+For that server delete, the token is resolved as follows: when a `token` is passed in it must be a valid, unexpired token for the synced user — otherwise an `INVALID_TOKEN` error is returned; when no `token` is passed, the saved token is used and refreshed via the [token provider](#step-4-register-a-token-provider-optional) if it has expired.
+
+Possible errors: `NO_SYNCED_USER`, `INVALID_USER`, `SUBMISSION_CANNOT_BE_DELETED`, `INVALID_TOKEN` (the supplied or saved token is not valid/usable for the server delete), `INVALID_SAVED_RESPONSE` (when the submission could not be deleted from the device), `SYNC_IN_PROGRESS` (when a `sync` is running).
 
 #### hasPendingSubmissions
 
@@ -1069,13 +1097,14 @@ Possible errors: `NO_SYNCED_USER`, `INVALID_USER`, `SUBMISSION_CANNOT_BE_DELETED
 fun hasPendingSubmissions(): Boolean
 ```
 
-Takes no parameters and returns `true` when any submission on the device has `pendingUpload: true` (its `status` is `closed`), so it will be uploaded or finish uploading on the next `sync`. It must not be called on the main thread.
+Takes no parameters and returns `true` when any submission on the device has `pendingUpload: true`, so it will be uploaded or finish uploading on the next `sync` — a `closed` submission, or, when syncing with `uploadSavedSubmissions`, a saved submission created on this device whose form is still on the device. Saved submissions created in Userless (toolkit) mode — whose form is not on the device — are not uploaded and are not counted. It must not be called on the main thread.
 
 ### Working offline
 
 Once a user is synced, a network connection is needed only for `sync` and for viewing some media files of dispatches and handoffs:
 
-- `getFormsAndSubmissions`, `showForm`, `showSubmission`, `deleteSubmission`, `hasPendingSubmissions` and `clearData` work offline, using the data stored on the device
+- `getFormsAndSubmissions`, `showForm`, `showSubmission`, `hasPendingSubmissions` and `clearData` work offline, using the data stored on the device
+- `deleteSubmission` works offline for a submission that exists only on the device; deleting one that has already been uploaded to the server (a saved submission synced with `uploadSavedSubmissions`) deletes it on the server first and so needs a network connection
 - completed submissions stay on the device (`pendingUpload: true`) until the next successful `sync`
 - photos, videos and attachments of dispatches and handoffs are downloaded only when the user taps on the field to view them while filling out the submission, so a network connection and a valid token are needed at that moment. Signatures and drawings are already on the device after `sync`
 
@@ -1084,16 +1113,16 @@ Once a user is synced, a network connection is needed only for `sync` and for vi
 In addition to the [shared errors](#errors), the user-based calls can return:
 
 - `INVALID_USER` - when the `username` does not match the synced user
-- `INVALID_TOKEN` - when the token has no `access_token`
+- `INVALID_TOKEN` - when the token is not a valid GoCanvas SDK bearer token
 - `NETWORK_ERROR` - when a request fails or the server rejects it
 - `SYNC_FAILED` - when the sync fails for any other reason
-- `TOKEN_USER_MISMATCH` - when the token belongs to a different user than `username`
+- `TOKEN_USER_MISMATCH` - when the token belongs to a different user than `username`, or a refreshed token's user does not match the synced user
 - `DIFFERENT_USER` - when another user is already synced on the device
 - `NO_SYNCED_USER` - when a call needs a synced user and none is synced yet
 - `FORM_RETIRED` - when starting a new submission for a retired form
-- `SYNC_IN_PROGRESS` - when `sync` is called while another sync is running
-- `SUBMISSION_CANNOT_BE_DELETED` - when the submission is a dispatch, a handoff or waiting to upload
-- `SUBMISSION_NOT_EDITABLE` - when `showSubmission` is called for a `closed` submission
+- `SYNC_IN_PROGRESS` - when `sync`, `showForm`, `showSubmission`, `deleteSubmission` or `clearData` is called while a sync is running
+- `SUBMISSION_CANNOT_BE_DELETED` - when the submission is a dispatch, a handoff, waiting to upload, or a saved submission whose upload is in progress
+- `SUBMISSION_NOT_EDITABLE` - when `showSubmission` is called for a `closed` submission or a saved submission whose upload is in progress
 - `USER_DATA_CONFLICT` - when the Userless `showForm` is called for a form that is already synced for the user, or that uses reference data already synced for the user
 
 ```kotlin
